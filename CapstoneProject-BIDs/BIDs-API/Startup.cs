@@ -36,6 +36,14 @@ namespace BIDs_API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BIDs", Version = "v1" });
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.SetIsOriginAllowed(host => true)
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader().AllowAnyOrigin()
+                                    );
+            });
             services.AddDbContext<BIDsContext>(
                 opt => opt.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")
@@ -73,12 +81,19 @@ namespace BIDs_API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BIDs v1"));
             }
+            if (!env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BIDs v1"));
+            }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
