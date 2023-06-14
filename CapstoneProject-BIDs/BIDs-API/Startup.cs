@@ -49,8 +49,8 @@ namespace BIDs_API
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowAnyOrigin()
-                .AllowCredentials()
-                .WithOrigins("http://localhost:4200");
+                .AllowCredentials().WithOrigins("http://localhost:4200");
+                //.WithOrigins("https://bids-api-testing.azurewebsites.net");
             }));
             services.AddSignalR();
             services.AddControllers();
@@ -59,6 +59,7 @@ namespace BIDs_API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BIDs", Version = "v1" });
 
                 // hiển thị khung authorize điền token
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = @"JWT Authorization header using the Bearer scheme. \\n\\n
@@ -66,9 +67,17 @@ namespace BIDs_API
                       \\n\\nExample: 'Bearer 12345abcdef'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer"
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                    //Scheme = "Bearer"
                 });
+
+
             });
             services.AddCors(options =>
             {
@@ -149,7 +158,10 @@ namespace BIDs_API
             if (!env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
+                app.UseSwagger(c =>
+                {
+                    c.SerializeAsV2 = true;
+                });
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BIDs v1"));
             }
 
