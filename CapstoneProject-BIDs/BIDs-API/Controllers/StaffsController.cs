@@ -19,6 +19,7 @@ namespace BIDs_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Staff")]
     public class StaffsController : ControllerBase
     {
         private readonly IStaffService _StaffService;

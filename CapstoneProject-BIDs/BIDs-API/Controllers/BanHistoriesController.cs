@@ -11,6 +11,7 @@ namespace BIDs_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Staff")]
     public class BanHistoriesController : ControllerBase
     {
         private readonly IBanHistoryService _BanHistoryService;
